@@ -1,0 +1,83 @@
+# Material Symbols used by the app.
+#
+# Names come from https://fonts.google.com/icons (Material Symbols Rounded).
+# Adding a line here and re-running ./scripts/build-icon-font.sh subsets the
+# icon into the font and adds it to the IconName union in
+# src/components/icons.generated.ts - so a typo in <Icon name> is a type error,
+# and an icon nobody uses costs nothing.
+
+# Auth
+password
+arrow_back_ios_new
+visibility
+visibility_off
+
+# Rail destinations. One glyph each: the FILL axis draws the outlined and
+# filled forms, so an unselected and selected item are the same icon.
+dashboard
+check_box
+group
+
+# Navigation and empty states
+apartment
+data_usage
+info
+inbox
+more_vert
+search
+work
+double_arrow
+description
+person
+notifications
+light_mode
+dark_mode
+account_circle
+settings
+logout
+
+# Profile tabs
+school
+language
+link
+
+# Entries and expansion panels
+expand_more
+expand_less
+edit
+delete
+
+# CVs
+upload_file
+download
+auto_awesome
+star
+undo
+error
+
+# Jobs and applications
+bookmark
+location_on
+schedule
+arrow_forward
+arrow_back
+business_center
+filter_list
+
+# Job posting
+send
+checklist
+help
+
+# Account
+photo_camera
+
+# General
+add
+remove
+replay
+check
+chevron_left
+chevron_right
+close
+close_small

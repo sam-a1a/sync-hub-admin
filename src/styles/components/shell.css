@@ -1,0 +1,65 @@
+/*
+ * The app shell: the rail beside the page, or docked under it.
+ *
+ * Wide, the rail is a column in a flex row. Compact, the flex direction turns
+ * and the rail sits last, so it reads as a dock along the bottom without the
+ * markup changing order - which keeps the tab order matching the reading order
+ * in both layouts.
+ */
+
+@layer components {
+  .shell {
+    display: flex;
+    min-block-size: 100dvh;
+    background-color: var(--md-sys-color-surface);
+  }
+
+  .shell__main {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 40px 40px 56px;
+  }
+
+  .shell__content {
+    inline-size: 100%;
+    max-inline-size: 1200px;
+    margin-inline: auto;
+  }
+
+  @media (max-width: 899px) {
+    .shell {
+      flex-direction: column;
+    }
+
+    .shell__main {
+      padding: 24px 16px 32px;
+    }
+  }
+}
+
+/*
+ * Stacking for the page cross-dissolve.
+ *
+ * The timing lives in PageTransition.tsx - Motion drives it. All this does is
+ * put the outgoing and incoming pages in the same place.
+ *
+ * A single-cell grid rather than absolute positioning: both layers sit in cell
+ * 1/1 so they overlap, but they still contribute their height, where absolute
+ * positioning would take them out of flow and collapse the main area to zero
+ * for the length of every transition.
+ */
+
+@layer components {
+  .page-transition {
+    display: grid;
+  }
+
+  .page-transition__layer {
+    grid-area: 1 / 1;
+    /*
+     * A grid item's automatic minimum size is its content, which stops a wide
+     * table from shrinking and blows the layout out sideways instead.
+     */
+    min-inline-size: 0;
+  }
+}

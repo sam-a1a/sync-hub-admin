@@ -1,0 +1,282 @@
+/*
+ * M3 Expressive navigation rail.
+ *
+ * Selection is carried by four things moving at once, which is what separates
+ * an Expressive rail from a tinted list item:
+ *
+ *   indicator  a pill that springs in behind the icon - scale on the SPATIAL
+ *              spring, so it overshoots slightly and settles.
+ *   icon       the FILL axis 0 -> 1. One glyph, not two assets, so the shape
+ *              genuinely interpolates instead of cross-fading.
+ *   label      wght travels to the emphasized weight, and GRAD with it.
+ *   colour     container and content roles, on the EFFECTS spring, which is
+ *              critically damped - an overshooting colour would flash a value
+ *              outside the scheme.
+ *
+ * On a narrow window the same markup becomes a dock along the bottom: the rail
+ * is a flex column that turns into a row, and the items stop being a column of
+ * icon-over-label only because there is no vertical room to spend.
+ */
+
+@layer components {
+  .nav-rail {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    inline-size: 96px;
+    padding-block: 20px 16px;
+    background-color: var(--md-sys-color-surface-container);
+  }
+
+  .nav-rail__logo {
+    inline-size: 32px;
+    block-size: auto;
+    /* The mark is not the first destination; the space is what says so. */
+    margin-block-end: 28px;
+  }
+
+  .nav-rail__group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-rail__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* --- Destination --- */
+
+  .nav-rail__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    inline-size: 80px;
+    padding-block: 4px;
+    border-radius: var(--md-sys-shape-corner-large);
+    color: var(--md-sys-color-on-surface-variant);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+
+    /*
+     * Re-declared so the type axes resolve against this element: the property
+     * is inherited, and a var() inside it is substituted where it is declared
+     * - on html - so a GRAD set here would otherwise never be seen.
+     */
+    font-variation-settings:
+      'ROND' var(--md-sys-typeface-rond),
+      'GRAD' var(--md-sys-typeface-grad);
+
+    transition:
+      color var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects),
+      --md-sys-typeface-grad
+        var(--md-sys-motion-spring-expressive-default-spatial-duration)
+        var(--md-sys-motion-spring-expressive-default-spatial);
+  }
+
+  /*
+   * The pill. It is always in the DOM at full size and scales up from 80%, so
+   * the spring has something to overshoot - animating width or inset would
+   * relayout the icon on every frame instead.
+   */
+  .nav-rail__indicator {
+    position: absolute;
+    inset-block-start: 4px;
+    inline-size: 56px;
+    block-size: 32px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background-color: var(--md-sys-color-secondary-container);
+    opacity: 0;
+    scale: 0.8;
+
+    transition:
+      opacity var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects),
+      scale var(--md-sys-motion-spring-expressive-default-spatial-duration)
+        var(--md-sys-motion-spring-expressive-default-spatial),
+      background-color
+        var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects);
+  }
+
+  .nav-rail__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 56px;
+    block-size: 32px;
+  }
+
+  .nav-rail__label {
+    position: relative;
+    font-size: var(--md-sys-typescale-label-medium-size);
+    line-height: var(--md-sys-typescale-label-medium-line-height);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    font-weight: var(--md-ref-typeface-weight-regular);
+    text-align: center;
+
+    transition: font-weight
+      var(--md-sys-motion-spring-expressive-default-spatial-duration)
+      var(--md-sys-motion-spring-expressive-default-spatial);
+  }
+
+  /*
+   * Hover previews the selection rather than inventing a look of its own. The
+   * icon fills the whole way - a half-filled Material Symbol is nearly
+   * indistinguishable from an outlined one, so metering the axis just looks
+   * like nothing happened. What is held back is the pill, which comes in at
+   * half opacity; that is what keeps hover and selected apart.
+   */
+  .nav-rail__item:hover .nav-rail__indicator {
+    opacity: 0.5;
+    scale: 1;
+  }
+
+  .nav-rail__item:hover {
+    color: var(--md-sys-color-on-surface);
+    --md-icon-fill: 1;
+  }
+
+  .nav-rail__item:hover .nav-rail__label {
+    font-weight: var(--md-ref-typeface-weight-semibold);
+  }
+
+  .nav-rail__item:focus-visible {
+    outline: 3px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  .nav-rail__item[aria-current='page'] {
+    color: var(--md-sys-color-on-secondary-container);
+    --md-icon-fill: 1;
+    --md-sys-typeface-grad: 50;
+  }
+
+  .nav-rail__item[aria-current='page'] .nav-rail__indicator {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .nav-rail__item[aria-current='page'] .nav-rail__label {
+    font-weight: var(--md-ref-typeface-weight-bold);
+  }
+
+  /* --- Controls --- */
+
+  .nav-rail__utility {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    padding: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+
+    /*
+     * An outlined circle, not a filled one: the ring is always there, and
+     * hover washes the inside of it with a state layer rather than switching
+     * the container to a different colour. A filled chip at rest would read as
+     * a selected state on controls that have none.
+     */
+    border: 1px solid var(--md-sys-color-outline-variant);
+    background-color: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+      background-color
+        var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects),
+      border-color
+        var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects),
+      color var(--md-sys-motion-spring-expressive-default-effects-duration)
+        var(--md-sys-motion-spring-expressive-default-effects),
+      border-radius
+        var(--md-sys-motion-spring-expressive-fast-effects-duration)
+        var(--md-sys-motion-spring-expressive-fast-effects);
+  }
+
+  .nav-rail__utility:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface)
+        calc(var(--md-sys-state-hover-state-layer-opacity) * 100%),
+      transparent
+    );
+    border-color: var(--md-sys-color-outline);
+    color: var(--md-sys-color-on-surface);
+    --md-icon-fill: 1;
+  }
+
+  /*
+   * Press feedback is a gentle shape settle - corner-large on a 48px circle is
+   * a visible flattening without ever reading as a square. The earlier
+   * corner-medium went much further, and on a spatial spring it undershot past
+   * its own target, which is what made a press look like it snapped to a hard
+   * edge.
+   */
+  .nav-rail__utility:active {
+    border-radius: var(--md-sys-shape-corner-large);
+  }
+
+  /*
+   * The logout glyph draws a bracket with an arrow leaving it, so its weight
+   * sits left of centre and the circle reads as mis-centred even though the
+   * box is not. Nudged the way the arrow points.
+   */
+  .nav-rail__utility--logout .md-icon {
+    translate: 2px 0;
+  }
+
+  .nav-rail__utility:focus-visible {
+    outline: 3px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+
+  /* --- Compact: the rail becomes a dock --- */
+
+  @media (max-width: 899px) {
+    .nav-rail {
+      position: sticky;
+      inset-block-end: 0;
+      z-index: 1;
+      flex-direction: row;
+      justify-content: space-between;
+      inline-size: 100%;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+      border-start-start-radius: var(--md-sys-shape-corner-large);
+      border-start-end-radius: var(--md-sys-shape-corner-large);
+    }
+
+    /* The mark is the one thing with no room on a phone, and the least to say. */
+    .nav-rail__logo {
+      display: none;
+    }
+
+    .nav-rail__group {
+      flex-direction: row;
+      justify-content: space-around;
+      inline-size: auto;
+    }
+
+    .nav-rail__bottom {
+      flex-direction: row;
+    }
+  }
+}
