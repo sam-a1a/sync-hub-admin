@@ -536,9 +536,23 @@
   /* --- Compact --- */
 
   @media (max-width: 899px) {
+    /*
+     * The top app bar is already showing the screen's name, so the heading
+     * here would be the same words a second time. Taken out of the flow rather
+     * than hidden: it stays the page's <h1> for a screen reader, which is
+     * where the document outline comes from.
+     */
     .page-header h1 {
-      font-size: var(--md-sys-typescale-headline-medium-size);
-      line-height: var(--md-sys-typescale-headline-medium-line-height);
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .page-header {
+      margin-block-end: 20px;
     }
 
     .overview {

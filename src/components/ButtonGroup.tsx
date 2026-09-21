@@ -1,3 +1,5 @@
+import { haptic } from '../app/haptics'
+
 export interface GroupOption {
   id: string
   label: string
@@ -25,10 +27,22 @@ export function ButtonGroup({
   active: string
   onChange: (id: string) => void
 }) {
+  /*
+   * Moving between one of a series of choices is exactly what the tick is for,
+   * and this strip is the place it fires fastest - six tabs, arrow keys held
+   * down. Hence the softest effect in the set: at 8ms it stays comfortable
+   * when it repeats, which is the whole constraint on this one.
+   */
+  const select = (id: string) => {
+    if (id === active) return
+    haptic('tick')
+    onChange(id)
+  }
+
   const move = (delta: number) => {
     const at = options.findIndex((option) => option.id === active)
     const next = (at + delta + options.length) % options.length
-    onChange(options[next].id)
+    select(options[next].id)
   }
 
   return (
@@ -45,7 +59,7 @@ export function ButtonGroup({
             aria-controls={`panel-${option.id}`}
             tabIndex={selected ? 0 : -1}
             className="md-group__button"
-            onClick={() => onChange(option.id)}
+            onClick={() => select(option.id)}
             onKeyDown={(event) => {
               if (event.key === 'ArrowRight') {
                 event.preventDefault()

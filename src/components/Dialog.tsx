@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, type ReactNode } from 'react'
+import { haptic } from '../app/haptics'
 import { Button } from './Button'
 import { Icon, type IconName } from './Icon'
 
@@ -118,6 +119,15 @@ export function ConfirmDialog({
             variant={danger ? 'danger' : 'filled'}
             className="md-dialog__action"
             onClick={() => {
+              /*
+               * The one place a confirm belongs: a change the user was asked
+               * to approve, and did. Suspending gets the same effect as
+               * accepting - the reject pattern is for an action that FAILED,
+               * not for one that succeeded and happened to be destructive.
+               * Opening this dialog fires nothing; disclosing a question is
+               * not a state change.
+               */
+              haptic('confirm')
               onConfirm()
               onClose()
             }}

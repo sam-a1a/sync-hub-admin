@@ -1,10 +1,14 @@
 /*
- * The app shell: the rail beside the page, or docked under it.
+ * The app shell: the rail beside the page, or the bar under it.
  *
  * Wide, the rail is a column in a flex row. Compact, the flex direction turns
- * and the rail sits last, so it reads as a dock along the bottom without the
- * markup changing order - which keeps the tab order matching the reading order
- * in both layouts.
+ * and `order` drops the rail to the foot, so one set of markup gives both
+ * layouts.
+ *
+ * The rail stays ahead of the content in the DOM, which is right for the wide
+ * layout and puts the bar one tab early in the compact one. Reversing it would
+ * just move the mismatch to the other layout; no ordering satisfies both, and
+ * a bar of three links is the cheaper thing to tab past.
  */
 
 @layer components {
@@ -31,8 +35,14 @@
       flex-direction: column;
     }
 
+    /* Last in the column, whatever its place in the markup. */
+    .nav-rail {
+      order: 1;
+    }
+
     .shell__main {
-      padding: 24px 16px 32px;
+      /* The top bar already supplies the space above the page. */
+      padding: 8px 16px 24px;
     }
   }
 }

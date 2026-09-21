@@ -1,0 +1,48 @@
+/*
+ * The compact top app bar.
+ *
+ * Hidden outright on a wide window - there the rail carries the mark and the
+ * two controls, and PageHeader carries the title, so a bar across the top
+ * would be a third piece of chrome saying nothing new.
+ */
+
+@layer components {
+  .top-bar {
+    display: none;
+  }
+
+  @media (max-width: 899px) {
+    .top-bar {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      block-size: 64px;
+      padding-inline: 16px 8px;
+      background-color: var(--md-sys-color-surface);
+    }
+
+    .top-bar__logo {
+      inline-size: 28px;
+      block-size: auto;
+    }
+
+    .top-bar__title {
+      flex: 1;
+      min-inline-size: 0;
+      padding-inline-start: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      font-family: var(--md-sys-typescale-title-large-font);
+      font-size: var(--md-sys-typescale-title-large-size);
+      line-height: var(--md-sys-typescale-title-large-line-height);
+      letter-spacing: var(--md-sys-typescale-title-large-tracking);
+      font-weight: var(--md-ref-typeface-weight-semibold);
+      color: var(--md-sys-color-on-surface);
+    }
+  }
+}

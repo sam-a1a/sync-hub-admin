@@ -1,19 +1,20 @@
 import { asset } from '../app/base'
+import { haptic } from '../app/haptics'
 import { navigate } from '../app/router'
 import { DESTINATIONS } from '../app/navigation'
 import { Icon } from './Icon'
 import { useTheme } from '../theme/useTheme'
+import { UtilityButton } from './UtilityButton'
 
 /**
  * The navigation rail.
  *
- * A column beside the page on a wide window, a dock along the bottom on a
+ * A column beside the page on a wide window, a bar along the bottom on a
  * narrow one - the same markup either way, because the difference is entirely
  * in how the list flows. See components/nav-rail.css.
  *
  * Destinations are links, so middle-click, copy-link and the browser's own
  * affordances keep working; the click is intercepted only to stay on the page.
- * The controls underneath go nowhere, so they are buttons.
  */
 export function NavRail({ pathname }: { pathname: string }) {
   const { resolvedTheme, setMode } = useTheme()
@@ -33,8 +34,24 @@ export function NavRail({ pathname }: { pathname: string }) {
                 className="nav-rail__item"
                 href={destination.path}
                 aria-current={active ? 'page' : undefined}
+                /*
+                 * The label is the accessible name at every width. On a wide
+                 * window it is also visible text; in the bottom bar it is
+                 * hidden, and this is what still announces the destination and
+                 * gives the pointer a tooltip.
+                 */
+                title={destination.label}
+                aria-label={destination.label}
                 onClick={(event) => {
                   event.preventDefault()
+                  /*
+                   * Silent when you tap the destination you are already on.
+                   * Nothing moved, so nothing should be felt - a buzz for a
+                   * no-op is exactly the gratuitous kind the guidance warns
+                   * about, and this is the most-tapped control in the app.
+                   */
+                  if (active) return
+                  haptic('tick')
                   navigate(destination.path)
                 }}
               >
@@ -49,26 +66,24 @@ export function NavRail({ pathname }: { pathname: string }) {
         })}
       </ul>
 
+      {/*
+        Wide only. On a narrow window these move into the top bar, because a
+        bar of unlabelled icons cannot also hold two controls that are not
+        destinations without them reading as a fourth and fifth place to go.
+      */}
       <div className="nav-rail__bottom">
-        <button
-          type="button"
-          className="nav-rail__utility"
+        <UtilityButton
+          icon={nextTheme === 'dark' ? 'dark_mode' : 'light_mode'}
+          label={`Switch to ${nextTheme} theme`}
           onClick={() => setMode(nextTheme)}
-          title={`Switch to ${nextTheme} theme`}
-          aria-label={`Switch to ${nextTheme} theme`}
-        >
-          <Icon name={nextTheme === 'dark' ? 'dark_mode' : 'light_mode'} />
-        </button>
+        />
 
-        <button
-          type="button"
-          className="nav-rail__utility nav-rail__utility--logout"
+        <UtilityButton
+          icon="logout"
+          label="Sign out"
+          className="utility-button--logout"
           onClick={() => navigate('/')}
-          title="Sign out"
-          aria-label="Sign out"
-        >
-          <Icon name="logout" />
-        </button>
+        />
       </div>
     </nav>
   )

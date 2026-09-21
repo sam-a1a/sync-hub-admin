@@ -13,9 +13,11 @@
  *              critically damped - an overshooting colour would flash a value
  *              outside the scheme.
  *
- * On a narrow window the same markup becomes a dock along the bottom: the rail
- * is a flex column that turns into a row, and the items stop being a column of
- * icon-over-label only because there is no vertical room to spend.
+ * On a narrow window the same markup becomes the bottom navigation bar: the
+ * flex column turns into a row, the labels are dropped, and the two controls
+ * at the foot move up into the top app bar. The four moving parts above are
+ * untouched - a rail and a bar are one component wearing two layouts, not two
+ * components that have to be kept in step.
  */
 
 @layer components {
@@ -175,93 +177,31 @@
     font-weight: var(--md-ref-typeface-weight-bold);
   }
 
-  /* --- Controls --- */
-
-  .nav-rail__utility {
-    position: relative;
-    display: grid;
-    place-items: center;
-    inline-size: 48px;
-    block-size: 48px;
-    padding: 0;
-    border-radius: var(--md-sys-shape-corner-full);
-
-    /*
-     * An outlined circle, not a filled one: the ring is always there, and
-     * hover washes the inside of it with a state layer rather than switching
-     * the container to a different colour. A filled chip at rest would read as
-     * a selected state on controls that have none.
-     */
-    border: 1px solid var(--md-sys-color-outline-variant);
-    background-color: transparent;
-    color: var(--md-sys-color-on-surface-variant);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-
-    transition:
-      background-color
-        var(--md-sys-motion-spring-expressive-default-effects-duration)
-        var(--md-sys-motion-spring-expressive-default-effects),
-      border-color
-        var(--md-sys-motion-spring-expressive-default-effects-duration)
-        var(--md-sys-motion-spring-expressive-default-effects),
-      color var(--md-sys-motion-spring-expressive-default-effects-duration)
-        var(--md-sys-motion-spring-expressive-default-effects),
-      border-radius
-        var(--md-sys-motion-spring-expressive-fast-effects-duration)
-        var(--md-sys-motion-spring-expressive-fast-effects);
-  }
-
-  .nav-rail__utility:hover {
-    background-color: color-mix(
-      in srgb,
-      var(--md-sys-color-on-surface)
-        calc(var(--md-sys-state-hover-state-layer-opacity) * 100%),
-      transparent
-    );
-    border-color: var(--md-sys-color-outline);
-    color: var(--md-sys-color-on-surface);
-    --md-icon-fill: 1;
-  }
+  /* --- Compact: the rail becomes the navigation bar --- */
 
   /*
-   * Press feedback is a gentle shape settle - corner-large on a 48px circle is
-   * a visible flattening without ever reading as a square. The earlier
-   * corner-medium went much further, and on a spatial spring it undershot past
-   * its own target, which is what made a press look like it snapped to a hard
-   * edge.
+   * The flexible navigation bar, which replaced the old 80px one: 64px tall,
+   * edge to edge, no elevation shadow. The 56x32 indicator and the three
+   * moving parts above are unchanged - only the layout and the labels differ,
+   * which is the whole reason this is one component and not two.
+   *
+   * Labels are hidden here by choice. Every item keeps its accessible name in
+   * `title`/`aria-label`, so nothing is lost to a screen reader or a tooltip -
+   * but three icons with no text do lean on the icons being legible on their
+   * own, which is a real trade and worth knowing you made.
    */
-  .nav-rail__utility:active {
-    border-radius: var(--md-sys-shape-corner-large);
-  }
-
-  /*
-   * The logout glyph draws a bracket with an arrow leaving it, so its weight
-   * sits left of centre and the circle reads as mis-centred even though the
-   * box is not. Nudged the way the arrow points.
-   */
-  .nav-rail__utility--logout .md-icon {
-    translate: 2px 0;
-  }
-
-  .nav-rail__utility:focus-visible {
-    outline: 3px solid var(--md-sys-color-primary);
-    outline-offset: 2px;
-  }
-
-  /* --- Compact: the rail becomes a dock --- */
-
   @media (max-width: 899px) {
     .nav-rail {
       position: sticky;
       inset-block-end: 0;
-      z-index: 1;
+      z-index: 2;
       flex-direction: row;
-      justify-content: space-between;
+      align-items: stretch;
+      gap: 0;
       inline-size: 100%;
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-      border-start-start-radius: var(--md-sys-shape-corner-large);
-      border-start-end-radius: var(--md-sys-shape-corner-large);
+      block-size: calc(64px + env(safe-area-inset-bottom));
+      padding-block: 0 env(safe-area-inset-bottom);
+      padding-inline: 0;
     }
 
     /* The mark is the one thing with no room on a phone, and the least to say. */
@@ -271,12 +211,47 @@
 
     .nav-rail__group {
       flex-direction: row;
-      justify-content: space-around;
-      inline-size: auto;
+      align-items: stretch;
+      gap: 0;
+      inline-size: 100%;
     }
 
+    .nav-rail__group > li {
+      /*
+       * Equal thirds. In a compact window the items share the width; it is
+       * only past 600px that their width comes from their content instead.
+       */
+      flex: 1 1 0;
+      display: flex;
+    }
+
+    .nav-rail__item {
+      flex: 1;
+      justify-content: center;
+      gap: 0;
+      inline-size: auto;
+      /* The whole 64px is the target, not just the pill inside it. */
+      padding-block: 0;
+      border-radius: 0;
+    }
+
+    /*
+     * Centred in the item rather than pinned 4px from its top: with the label
+     * gone there is no second row for the pill to sit above.
+     */
+    .nav-rail__indicator {
+      position: absolute;
+      inset-block-start: 50%;
+      translate: 0 -50%;
+    }
+
+    .nav-rail__label {
+      display: none;
+    }
+
+    /* Moved into the top bar - see components/top-bar.css. */
     .nav-rail__bottom {
-      flex-direction: row;
+      display: none;
     }
   }
 }

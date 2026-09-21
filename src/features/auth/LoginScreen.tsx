@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { asset } from '../../app/base'
+import { haptic } from '../../app/haptics'
 import { navigate, usePathname } from '../../app/router'
 import { Button } from '../../components/Button'
 import { PasswordField, TextField } from '../../components/Field'
@@ -79,20 +80,38 @@ export function LoginScreen() {
   const valid = EMAIL.test(email) && (resetting || password.length > 0)
 
   const toggle = () => {
+    /* Swapping between sign-in and reset is a move between two choices on one
+       screen, not a commitment - so a tick, the same as a destination. */
+    haptic('tick')
     navigate(PATHS[phase === 'login' ? 'reset' : 'login'])
   }
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    if (!valid || pending || sent) return
+    if (pending || sent) return
+
+    /*
+     * The only genuine failure in the build, and so the only reject: Enter
+     * pressed in a field while the form is not valid. The button itself is
+     * disabled, so a tap cannot reach here - a keyboard can.
+     */
+    if (!valid) {
+      haptic('reject')
+      return
+    }
+
+    haptic('press')
     setPending(true)
     window.setTimeout(() => {
       setPending(false)
+      /* A form that went through. There is no API to fail against yet, so
+         this is a confirm every time; when one lands, the failure arm is a
+         reject and nothing else about this changes. */
+      haptic('confirm')
       if (phase === 'reset') {
         setSent(true)
         return
       }
-      // No API yet, so there is nothing to reject against.
       navigate('/overview')
     }, 900)
   }
