@@ -26,6 +26,8 @@
     gap: 24px;
     inline-size: 100%;
     min-inline-size: 0;
+    padding: 5px;
+    box-sizing: border-box;
   }
 
   /*
@@ -502,7 +504,7 @@
   .thin__badge {
     position: absolute;
     inset-block-end: 10px;
-    inset-inline-start: var(--x);
+    inset-inline-start: clamp(28px, var(--x), calc(100% - 28px));
     translate: -50% 0;
     padding: 3px 12px;
     border-radius: var(--md-sys-shape-corner-full);
@@ -552,8 +554,8 @@
     justify-self: center;
     display: grid;
     place-items: center;
-    inline-size: 76px;
-    block-size: 76px;
+    inline-size: min(76px, 100%);
+    aspect-ratio: 1;
     margin-block-end: -20px;
     z-index: 1;
     border-radius: var(--md-sys-shape-corner-full);
@@ -631,6 +633,7 @@
   }
 
   .versus__label {
+    overflow-wrap: anywhere;
     font-size: var(--md-sys-typescale-body-medium-size);
     color: var(--md-sys-color-on-surface-variant);
   }
@@ -787,6 +790,109 @@
     .chart__bubble-text {
       animation-duration: 1ms;
       animation-delay: 0ms;
+    }
+  }
+}
+
+@layer components {
+  .reach__mobile-name {
+    display: none;
+  }
+
+  @media (max-width: 599px) {
+    .md-dialog__panel:has(.stats) {
+      inline-size: calc(100vw - 24px);
+      padding: 20px 16px;
+    }
+
+    .stats {
+      gap: 20px;
+    }
+
+    .stats__panel {
+      min-block-size: 0;
+    }
+
+    .chart__cols {
+      block-size: clamp(160px, 30dvh, 220px);
+      gap: 6px;
+    }
+
+    .chart__col-name,
+    .chart__col:hover .chart__col-name {
+      writing-mode: horizontal-tb;
+      rotate: none;
+      font-size: var(--md-sys-typescale-label-medium-size);
+    }
+
+    /* Labels sit above short bars so the value cap cannot cover the name. */
+    .chart__reach {
+      gap: 12px;
+      padding-inline: 0 36px;
+    }
+
+    .reach__mobile-name {
+      display: block;
+      margin-block-end: 4px;
+      font-size: var(--md-sys-typescale-label-large-size);
+    }
+
+    .reach__name {
+      display: none;
+    }
+
+    .reach__bar {
+      block-size: 24px;
+    }
+
+    .reach__value {
+      block-size: 28px;
+      padding-inline: 10px;
+      font-size: var(--md-sys-typescale-label-large-size);
+    }
+
+    .reach__tip {
+      block-size: 20px;
+    }
+
+    .chart__pops {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px 12px;
+      block-size: auto;
+    }
+
+    .pop {
+      block-size: 140px;
+    }
+
+    .pop__circle {
+      inline-size: 48px;
+      font-size: var(--md-sys-typescale-label-large-size);
+    }
+
+    .pop__col {
+      min-block-size: 84px;
+    }
+
+    .versus {
+      grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+      gap: 4px 12px;
+    }
+
+    .versus__cell {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .versus__bar {
+      block-size: 12px;
+    }
+
+    .versus__head,
+    .versus__label {
+      font-size: var(--md-sys-typescale-body-small-size);
     }
   }
 }

@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { haptic } from '../app/haptics'
 
 export interface GroupOption {
@@ -27,6 +28,7 @@ export function ButtonGroup({
   active: string
   onChange: (id: string) => void
 }) {
+  const buttons = useRef(new Map<string, HTMLButtonElement>())
   /*
    * Moving between one of a series of choices is exactly what the tick is for,
    * and this strip is the place it fires fastest - six tabs, arrow keys held
@@ -43,6 +45,7 @@ export function ButtonGroup({
     const at = options.findIndex((option) => option.id === active)
     const next = (at + delta + options.length) % options.length
     select(options[next].id)
+    buttons.current.get(options[next].id)?.focus({ preventScroll: true })
   }
 
   return (
@@ -52,6 +55,10 @@ export function ButtonGroup({
         return (
           <button
             key={option.id}
+            ref={(element) => {
+              if (element) buttons.current.set(option.id, element)
+              else buttons.current.delete(option.id)
+            }}
             type="button"
             role="tab"
             id={`tab-${option.id}`}
@@ -60,6 +67,9 @@ export function ButtonGroup({
             tabIndex={selected ? 0 : -1}
             className="md-group__button"
             onClick={() => select(option.id)}
+            onFocus={(event) =>
+              event.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+            }
             onKeyDown={(event) => {
               if (event.key === 'ArrowRight') {
                 event.preventDefault()

@@ -57,6 +57,9 @@
     inline-size: min(480px, calc(100vw - 48px));
     box-sizing: border-box;
     padding: 24px;
+    max-block-size: calc(100dvh - 32px);
+    display: flex;
+    flex-direction: column;
     border-radius: var(--md-sys-shape-corner-extra-large);
     background-color: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
@@ -78,6 +81,7 @@
   }
 
   .md-dialog__headline {
+    overflow-wrap: anywhere;
     margin: 0;
     font-family: var(--md-sys-typescale-headline-small-font);
     font-size: var(--md-sys-typescale-headline-small-size);
@@ -118,6 +122,10 @@
   }
 
   .md-dialog__body {
+    min-block-size: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
     margin-block-start: 16px;
     font-family: var(--md-sys-typescale-body-medium-font);
     font-size: var(--md-sys-typescale-body-medium-size);
@@ -131,10 +139,32 @@
   }
 
   .md-dialog__actions {
+    flex: none;
+    flex-wrap: wrap;
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     margin-block-start: 24px;
+  }
+
+  @media (max-width: 599px) {
+    .md-dialog__panel {
+      inline-size: calc(100vw - 24px);
+      padding: 20px;
+    }
+
+    .md-dialog__headline {
+      font-size: 22px;
+      line-height: 28px;
+    }
+
+    .md-dialog__actions {
+      margin-block-start: 16px;
+    }
+
+    .md-dialog__action {
+      padding-inline: 16px;
+    }
   }
 }
 

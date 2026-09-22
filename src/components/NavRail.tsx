@@ -34,12 +34,6 @@ export function NavRail({ pathname }: { pathname: string }) {
                 className="nav-rail__item"
                 href={destination.path}
                 aria-current={active ? 'page' : undefined}
-                /*
-                 * The label is the accessible name at every width. On a wide
-                 * window it is also visible text; in the bottom bar it is
-                 * hidden, and this is what still announces the destination and
-                 * gives the pointer a tooltip.
-                 */
                 title={destination.label}
                 aria-label={destination.label}
                 onClick={(event) => {
@@ -67,9 +61,8 @@ export function NavRail({ pathname }: { pathname: string }) {
       </ul>
 
       {/*
-        Wide only. On a narrow window these move into the top bar, because a
-        bar of unlabelled icons cannot also hold two controls that are not
-        destinations without them reading as a fourth and fifth place to go.
+        Wide only. On a narrow window these move into the top bar, to keep navigation
+        destinations separate from theme and account controls.
       */}
       <div className="nav-rail__bottom">
         <UtilityButton

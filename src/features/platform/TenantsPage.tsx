@@ -34,7 +34,7 @@ export function TenantsPage() {
     <section>
       <PageHeader
         title="Tenants"
-        description="Manage tenant access, invitations and platform records. Tenant plans are display-only."
+        description="Manage access and invitations. Plans are display-only."
         actions={
           <Button
             variant="filled"
@@ -59,18 +59,15 @@ export function TenantsPage() {
               <div className="card__text">
                 <p className="card__title">
                   {tenant.name}
-                  <span className="card__sep" aria-hidden="true">
-                    ·
-                  </span>
-                  <span className="card__title-soft">{tenant.plan}</span>
                 </p>
                 <p className="card__meta">
-                  {tenant.slug}
+                  {tenant.plan} plan
                   <span className="card__sep" aria-hidden="true">
                     ·
                   </span>
                   {formatCount(tenant.memberCount)} members
                 </p>
+                <p className="card__meta card__slug">{tenant.slug}</p>
               </div>
 
               <div className="card__marks">

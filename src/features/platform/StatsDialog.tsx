@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/Button'
 import { ButtonGroup } from '../../components/ButtonGroup'
 import { Dialog } from '../../components/Dialog'
@@ -105,7 +105,7 @@ function Columns() {
         ))}
       </div>
       <p className="chart__note">
-        Applications received per month. Hover a column. September is still open.
+        Applications received per month. September is still open.
       </p>
     </div>
   )
@@ -118,6 +118,7 @@ function Reach() {
       <ul className="chart__reach">
         {REACH.map((band) => (
           <li className="reach" key={band.label}>
+            <span className="reach__mobile-name">{band.label}</span>
             <div className="reach__track" style={{ '--w': `${band.value}%` } as Style}>
               <div className="reach__bar">
                 <span className="reach__name">{band.label}</span>
@@ -219,9 +220,19 @@ function Quality() {
  * validated instead: ΔE 17.3 normal, 13.3 protan, 22.0 tritan.
  */
 function Line() {
-  const w = 620
+  const container = useRef<HTMLDivElement>(null)
+  const [w, setWidth] = useState(620)
+  useEffect(() => {
+    const element = container.current
+    if (!element) return
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(Math.min(620, entry.contentRect.width))
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
   const h = 250
-  const pad = { top: 34, right: 28, bottom: 40, left: 40 }
+  const pad = { top: 34, right: 20, bottom: 40, left: 28 }
   const max = 7
 
   const x = (i: number) =>
@@ -240,74 +251,76 @@ function Line() {
         ))}
       </ul>
 
-      <svg
-        className="chart__line"
-        viewBox={`0 0 ${w} ${h}`}
-        role="img"
-        aria-label="Days to a candidate's first application, April to September. Platform falls from 6.2 to 3.2; the best tenant from 4.4 to 2.4."
-      >
-        {[0, 2, 4, 6].map((tick) => (
-          <g key={tick}>
-            <line
-              className="chart__grid"
-              x1={pad.left}
-              x2={w - pad.right}
-              y1={y(tick)}
-              y2={y(tick)}
-            />
-            <text className="chart__tick" x={pad.left - 10} y={y(tick) + 4}>
-              {tick}
-            </text>
-          </g>
-        ))}
-
-        {SERIES.map((series, s) => {
-          const path = TIME_TO_APPLY.map(
-            (point, i) =>
-              `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(point[series.key])}`,
-          ).join(' ')
-          return (
-            <g key={series.key} data-tone={series.tone}>
-              <path
-                className="chart__stroke"
-                d={path}
-                style={{ '--i': s } as Style}
+      <div ref={container}>
+        <svg
+          className="chart__line"
+          viewBox={`0 0 ${w} ${h}`}
+          role="img"
+          aria-label="Days to a candidate's first application, April to September. Platform falls from 6.2 to 3.2; the best tenant from 4.4 to 2.4."
+        >
+          {[0, 2, 4, 6].map((tick) => (
+            <g key={tick}>
+              <line
+                className="chart__grid"
+                x1={pad.left}
+                x2={w - pad.right}
+                y1={y(tick)}
+                y2={y(tick)}
               />
-              {TIME_TO_APPLY.map((point, i) => (
-                <g key={point.label} style={{ '--i': i + s } as Style}>
-                  <circle
-                    className="chart__node"
-                    cx={x(i)}
-                    cy={y(point[series.key])}
-                    r={7}
-                  />
-                  <rect
-                    className="chart__bubble"
-                    x={x(i) - 17}
-                    y={y(point[series.key]) - (s === 0 ? 34 : -14)}
-                    width={34}
-                    height={20}
-                    rx={10}
-                  />
-                  <text
-                    className="chart__bubble-text"
-                    x={x(i)}
-                    y={y(point[series.key]) - (s === 0 ? 20 : -28)}
-                  >
-                    {point[series.key]}
-                  </text>
-                </g>
-              ))}
+              <text className="chart__tick" x={pad.left - 10} y={y(tick) + 4}>
+                {tick}
+              </text>
             </g>
-          )
-        })}
+          ))}
 
-        {TIME_TO_APPLY.map((point, i) => (
-          <text className="chart__axis" key={point.label} x={x(i)} y={h - 10}>
-            {point.label}
-          </text>
-        ))}
-      </svg>
+          {SERIES.map((series, s) => {
+            const path = TIME_TO_APPLY.map(
+              (point, i) =>
+                `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(point[series.key])}`,
+            ).join(' ')
+            return (
+              <g key={series.key} data-tone={series.tone}>
+                <path
+                  className="chart__stroke"
+                  d={path}
+                  style={{ '--i': s } as Style}
+                />
+                {TIME_TO_APPLY.map((point, i) => (
+                  <g key={point.label} style={{ '--i': i + s } as Style}>
+                    <circle
+                      className="chart__node"
+                      cx={x(i)}
+                      cy={y(point[series.key])}
+                      r={7}
+                    />
+                    <rect
+                      className="chart__bubble"
+                      x={x(i) - 17}
+                      y={y(point[series.key]) - (s === 0 ? 34 : -14)}
+                      width={34}
+                      height={20}
+                      rx={10}
+                    />
+                    <text
+                      className="chart__bubble-text"
+                      x={x(i)}
+                      y={y(point[series.key]) - (s === 0 ? 20 : -28)}
+                    >
+                      {point[series.key]}
+                    </text>
+                  </g>
+                ))}
+              </g>
+            )
+          })}
+
+          {TIME_TO_APPLY.map((point, i) => (
+            <text className="chart__axis" key={point.label} x={x(i)} y={h - 10}>
+              {point.label}
+            </text>
+          ))}
+        </svg>
+      </div>
       <p className="chart__note">
         Days from sign-up to a candidate&rsquo;s first application.
       </p>
@@ -382,7 +395,7 @@ export function StatsDialog({
       open={open}
       onClose={onClose}
       headline="Platform statistics"
-      description="A preview of the reporting that is coming. Figures are illustrative."
+      description="Reporting preview · Illustrative figures"
       actions={
         <Button variant="filled" className="md-dialog__action" onClick={onClose}>
           Close

@@ -3,18 +3,7 @@ import { navigate } from '../app/router'
 import { useTheme } from '../theme/useTheme'
 import { UtilityButton } from './UtilityButton'
 
-/**
- * The compact top app bar.
- *
- * Only exists on a narrow window, and only because the bottom bar gave up its
- * labels. Once the destinations are icons alone, anything else sharing that
- * row reads as a fourth destination - so theme and sign-out come up here, and
- * the bar below carries nothing but the three places you can go.
- *
- * It also takes over the page title, which is why PageHeader hides its own
- * heading at this width: the name of the screen is already on screen, and
- * printing it twice wastes the only scarce thing a phone has.
- */
+/** Compact page title and utilities; navigation lives in the bottom bar. */
 export function TopAppBar({ title }: { title: string }) {
   const { resolvedTheme, setMode } = useTheme()
   const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark'

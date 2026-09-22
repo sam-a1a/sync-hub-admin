@@ -10,10 +10,8 @@ type Decision = { request: AccessRequest; kind: 'accept' | 'dismiss' }
 /**
  * The companies asking to be let onto SYNC Hub, oldest first.
  *
- * A list of cards rather than a table. There are four facts per request and
- * two decisions, which is a shape a row of columns makes harder to read than
- * it needs to be: the company and who asked belong together on one line, and
- * how to reach them and when they asked belong together on the next.
+ * Identity and contact details lead each record; the date and decisions form
+ * a separate footer on compact screens so actions never squeeze the text.
  *
  * Both decisions empty the queue and neither can be taken back from here, so
  * both confirm first.
@@ -26,7 +24,7 @@ export function RequestsPage() {
     <section>
       <PageHeader
         title="Requests"
-        description="Companies asking to be let onto SYNC Hub, oldest first. Accept one to open a tenant, or dismiss it."
+        description="Review access requests, oldest first. Accept to create a tenant."
       />
 
       {ACCESS_REQUESTS.length === 0 ? (
@@ -39,29 +37,22 @@ export function RequestsPage() {
           {ACCESS_REQUESTS.map((request) => (
             <li className="card" key={request.id}>
               <div className="card__text">
-                <p className="card__title">
-                  {request.company}
-                  <span className="card__sep" aria-hidden="true">
-                    ·
-                  </span>
-                  <span className="card__title-soft">{request.fullName}</span>
-                </p>
-                <p className="card__meta">
-                  {request.email}
-                  <span className="card__sep" aria-hidden="true">
-                    ·
-                  </span>
-                  {askedOn(request.askedOn)}
-                </p>
+                <p className="card__title">{request.company}</p>
+                <p className="card__contact">{request.fullName}</p>
+                <p className="card__meta">{request.email}</p>
               </div>
-
-              <SplitButton
-                label="Accept"
-                trailingIcon="close_small"
-                trailingLabel={`Dismiss the request from ${request.company}`}
-                onAction={() => setDecision({ request, kind: 'accept' })}
-                onTrailing={() => setDecision({ request, kind: 'dismiss' })}
-              />
+              <div className="card__footer">
+                <time className="card__date" dateTime={request.askedOn}>
+                  {askedOn(request.askedOn)}
+                </time>
+                <SplitButton
+                  label="Accept"
+                  trailingIcon="close_small"
+                  trailingLabel={`Dismiss the request from ${request.company}`}
+                  onAction={() => setDecision({ request, kind: 'accept' })}
+                  onTrailing={() => setDecision({ request, kind: 'dismiss' })}
+                />
+              </div>
             </li>
           ))}
         </ul>

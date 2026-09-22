@@ -14,7 +14,7 @@
  *              outside the scheme.
  *
  * On a narrow window the same markup becomes the bottom navigation bar: the
- * flex column turns into a row, the labels are dropped, and the two controls
+ * flex column turns into a row, the labels stay visible, and the two controls
  * at the foot move up into the top app bar. The four moving parts above are
  * untouched - a rail and a bar are one component wearing two layouts, not two
  * components that have to be kept in step.
@@ -179,17 +179,7 @@
 
   /* --- Compact: the rail becomes the navigation bar --- */
 
-  /*
-   * The flexible navigation bar, which replaced the old 80px one: 64px tall,
-   * edge to edge, no elevation shadow. The 56x32 indicator and the three
-   * moving parts above are unchanged - only the layout and the labels differ,
-   * which is the whole reason this is one component and not two.
-   *
-   * Labels are hidden here by choice. Every item keeps its accessible name in
-   * `title`/`aria-label`, so nothing is lost to a screen reader or a tooltip -
-   * but three icons with no text do lean on the icons being legible on their
-   * own, which is a real trade and worth knowing you made.
-   */
+  /* Compact destinations retain labels so the icons never need guessing. */
   @media (max-width: 899px) {
     .nav-rail {
       position: sticky;
@@ -199,7 +189,7 @@
       align-items: stretch;
       gap: 0;
       inline-size: 100%;
-      block-size: calc(64px + env(safe-area-inset-bottom));
+      block-size: calc(72px + env(safe-area-inset-bottom));
       padding-block: 0 env(safe-area-inset-bottom);
       padding-inline: 0;
     }
@@ -228,25 +218,19 @@
     .nav-rail__item {
       flex: 1;
       justify-content: center;
-      gap: 0;
+      gap: 2px;
       inline-size: auto;
-      /* The whole 64px is the target, not just the pill inside it. */
+      /* The whole destination is a touch target. */
       padding-block: 0;
       border-radius: 0;
     }
 
-    /*
-     * Centred in the item rather than pinned 4px from its top: with the label
-     * gone there is no second row for the pill to sit above.
-     */
     .nav-rail__indicator {
-      position: absolute;
-      inset-block-start: 50%;
-      translate: 0 -50%;
+      inset-block-start: 10px;
     }
 
     .nav-rail__label {
-      display: none;
+      display: block;
     }
 
     /* Moved into the top bar - see components/top-bar.css. */

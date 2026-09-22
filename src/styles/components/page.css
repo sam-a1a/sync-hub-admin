@@ -301,6 +301,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    overflow-wrap: anywhere;
   }
 
   .card__title {
@@ -311,11 +312,25 @@
     color: var(--md-sys-color-on-surface);
   }
 
-  /* The second name on the line is the same size, one step quieter - it
-     qualifies the company rather than competing with it. */
-  .card__title-soft {
-    font-weight: var(--md-ref-typeface-weight-regular);
+  .card__contact {
+    font-size: var(--md-sys-typescale-body-medium-size);
     color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .card__footer {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: none;
+  }
+
+  .card__date {
+    font-size: var(--md-sys-typescale-body-small-size);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .card__slug {
+    font-size: var(--md-sys-typescale-body-small-size);
   }
 
   .card__meta {
@@ -364,6 +379,7 @@
   .split-button {
     display: inline-flex;
     gap: 2px;
+    flex: none;
   }
 
   .split-button__leading,
@@ -568,15 +584,85 @@
       line-height: 60px;
     }
 
-    /* A row stacks rather than scrolling sideways. */
+    /* Full-width identity first; metadata and decisions never compete for it. */
     .card {
-      flex-wrap: wrap;
-      padding-inline: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 20px 16px;
     }
 
     .card__actions,
-    .card__marks {
+    .card__marks,
+    .card__footer {
       inline-size: 100%;
+      flex-wrap: wrap;
+    }
+
+    .card__footer {
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card__marks .status {
+      min-inline-size: 0;
+      padding: 4px 12px;
+    }
+
+    .card__actions {
+      border-block-start: 1px solid var(--md-sys-color-outline-variant);
+      padding-block-start: 12px;
+    }
+
+    .card__actions .md-button {
+      padding-inline: 20px;
+    }
+
+    .overview__hero {
+      padding: 24px;
+    }
+
+    .overview__rows {
+      gap: 8px;
+    }
+
+    .overview__row {
+      padding: 16px;
+      gap: 12px;
+    }
+
+    .overview__row-value {
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    .overview__soon {
+      margin-block-start: 16px;
+      padding: 20px 16px;
+      gap: 12px;
+    }
+
+    .overview__soon-icon {
+      display: none;
+    }
+
+    .overview__soon-title {
+      font-size: var(--md-sys-typescale-title-medium-size);
+      line-height: var(--md-sys-typescale-title-medium-line-height);
+    }
+  }
+
+  @media (pointer: coarse) {
+    .md-button,
+    .md-icon-button,
+    .split-button__leading,
+    .split-button__trailing {
+      min-block-size: 48px;
+      min-inline-size: 48px;
+    }
+
+    .card:hover {
+      background-color: transparent;
     }
   }
 }
